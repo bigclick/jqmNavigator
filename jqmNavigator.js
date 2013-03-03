@@ -151,6 +151,45 @@
                         console.log('Can\'t pop first view, you can replace it instead!');
                     }
                 },
+                
+                /**
+                 * Pops views from a stack up to the number (N) supplied.
+                 *
+                 * @param N {Integer} The number of views to pop back
+    			 * @param options {*} Transition parameters can be passed like: transition, reverse, showLoadMsg or loadMsgDelay
+                 */
+                popBackNViews:function jqmNavigator_popBackNViews(N, options) {
+                    var containerViews = this._getPageContainerViews(options);
+                    if (containerViews.views.length > 1) {
+						if (containerViews.views.length - N > 1) {
+	                        // From view ref
+	                        var fromView = containerViews.views[containerViews.views.length - 1],
+	                        // To view ref
+	                            toView = containerViews.views[containerViews.views.length - N],
+	                        // Removed views
+	                            removedViews = containerViews.views.splice((containerViews.views.length - N) + 1, containerViews.views.length - 1);
+
+	                        fromView.$el.one('pagehide', function (event) {
+	                            removedViews.forEach(function (item) {
+	                                item.$el.detach();
+	                            }, this);
+	                        });
+
+	                        // Changing to view below current one
+	                        $.mobile.changePage(toView.$el, $.extend({
+	                            role:'page',
+	                            reverse:true,
+	                            changeHash:false,
+	                            pageContainer:containerViews.pageContainer
+	                        }, options));
+						} else {
+							console.log('Can\'t pop first view or below, you can replace it instead!');
+						}
+
+                    } else {
+                        console.log('Can\'t pop first view, you can replace it instead!');
+                    }
+                },
 
                 /**
                  * Replaces current view on the stack.
